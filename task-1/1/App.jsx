@@ -86,3 +86,27 @@ function App() {
 }
 
 export default App;
+
+// สิ่งที่สร้างขึ้นใน Task 1:
+// 1. State พื้นฐาน:
+// currentSentence - เก็บประโยคที่จะให้พิมพ์
+// userInput - เก็บข้อความที่ผู้ใช้พิมพ์
+// timeElapsed - เก็บเวลาที่ผ่านไป
+// gameStatus - เก็บสถานะเกม (idle/playing/finished)
+
+// 2. UI Layout ที่เป็นระเบียบ:
+
+// Header ที่สวยงาม
+// ส่วนแสดงเวลา
+// ส่วนแสดงประโยคที่จะพิมพ์
+// Textarea สำหรับพิมพ์
+// ปุ่มเริ่มเกม
+// ส่วนแสดงสถานะ
+
+// 3. CSS ที่เขียนเองแบบ Clean:
+
+// ใช้ Gradient backgrounds
+// Responsive design
+// Hover effects
+// สีสันที่เป็นระเบียบ
+// Typography ที่ดูดี
