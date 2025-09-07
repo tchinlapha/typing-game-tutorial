@@ -56,6 +56,31 @@ function App() {
     return sentences[randomIndex];
   };
 
+    // ฟังก์ชันเริ่มเกม
+  const startGame = () => {
+    const newSentence = getRandomSentence();
+    setCurrentSentence(newSentence);
+    setUserInput('');
+    setTimeElapsed(0);
+    setGameStatus('playing');
+    setStartTime(Date.now());
+    // รีเซ็ต state การเปรียบเทียบ
+    setCorrectChars(0);
+    setIncorrectChars(0);
+    setAccuracy(100);
+  };
+
+    // ฟังก์ชันจัดการการพิมพ์
+  const handleInputChange = (e) => {
+    const newInput = e.target.value;
+    
+    // ป้องกันการพิมพ์เกินความยาวประโยค
+    if (newInput.length <= currentSentence.length) {
+      setUserInput(newInput);
+      compareText(newInput);
+    }
+  };
+
   // ฟังก์ชันสำหรับสร้างข้อความที่มีไฮไลต์
   const renderHighlightedText = () => {
     if (!currentSentence) return null;
@@ -84,14 +109,6 @@ function App() {
         </span>
       );
     });
-  };
-
-  // ฟังก์ชันหยุดเกม
-  const stopGame = () => {
-    if (timerRef.current) {
-      clearInterval(timerRef.current);
-      timerRef.current = null;
-    }
   };
 
   // ฟังก์ชันเปรียบเทียบข้อความและอัพเดท state
@@ -123,18 +140,11 @@ function App() {
     // ตรวจสอบว่าพิมพ์เสร็จหรือยัง
     if (input.length === currentSentence.length && correct === currentSentence.length) {
       setGameStatus('finished');
-      stopGame(); // หยุดเวลาเมื่อเสร็จสิ้น
-    }
-  };
-
-  // ฟังก์ชันจัดการการพิมพ์
-  const handleInputChange = (e) => {
-    const newInput = e.target.value;
-    
-    // ป้องกันการพิมพ์เกินความยาวประโยค
-    if (newInput.length <= currentSentence.length) {
-      setUserInput(newInput);
-      compareText(newInput);
+      // หยุดเวลา
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+        timerRef.current = null;
+      }
     }
   };
 
@@ -181,24 +191,9 @@ function App() {
     e.preventDefault();
   };
 
-  // ฟังก์ชันเริ่มเกม
-  const startGame = () => {
-    const newSentence = getRandomSentence();
-    setCurrentSentence(newSentence);
-    setUserInput('');
-    setTimeElapsed(0);
-    setStartTime(Date.now());
-    setGameStatus('playing');
-    // รีเซ็ต state การเปรียบเทียบ
-    setCorrectChars(0);
-    setIncorrectChars(0);
-    setAccuracy(100);
-  };
-
   // useEffect สำหรับ focus textarea เมื่อเริ่มเกม
   useEffect(() => {
     if (gameStatus === 'playing' && textareaRef.current) {
-      // ใช้ setTimeout เพื่อให้ DOM render เสร็จก่อน
       setTimeout(() => {
         textareaRef.current.focus();
       }, 100);
@@ -273,35 +268,19 @@ function App() {
             </div>
           </div>
 
-          {/* Sentence Display with Highlighting */}
-          <div className="bg-gray-50 border-2 border-gray-200 rounded-lg p-6 min-h-[120px] flex items-center justify-center">
+          {/* Sentence Display */}
+          <div className="bg-gray-50 border-2 border-gray-200 rounded-lg p-6 min-h-[120px] flex items-center justify-center select-none">
             {currentSentence ? (
               <div className="w-full">
-                <div className="text-lg leading-relaxed text-justify font-mono">
+                <div className="text-lg leading-relaxed text-justify">
                   {gameStatus === 'playing' ? renderHighlightedText() : (
                     <span className="text-gray-700">{currentSentence}</span>
                   )}
                 </div>
-                <div className="mt-4 flex justify-between items-center">
+                <div className="mt-3 text-right">
                   <span className="text-sm text-gray-500 bg-gray-200 px-2 py-1 rounded">
                     {currentSentence.split(' ').length} words
                   </span>
-                  {gameStatus === 'playing' && (
-                    <div className="text-xs text-gray-500 space-x-4">
-                      <span className="inline-flex items-center">
-                        <span className="w-3 h-3 bg-green-200 rounded mr-1"></span>
-                        ถูกต้อง
-                      </span>
-                      <span className="inline-flex items-center">
-                        <span className="w-3 h-3 bg-red-200 rounded mr-1"></span>
-                        ผิด
-                      </span>
-                      <span className="inline-flex items-center">
-                        <span className="w-3 h-3 bg-blue-300 rounded mr-1 animate-pulse"></span>
-                        ตำแหน่งปัจจุบัน
-                      </span>
-                    </div>
-                  )}
                 </div>
               </div>
             ) : (
@@ -315,8 +294,8 @@ function App() {
           <div>
             <textarea
               ref={textareaRef}
-              className="w-full p-4 text-lg border-2 border-gray-200 rounded-lg resize-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 focus:outline-none disabled:bg-gray-50 disabled:text-gray-400 disabled:cursor-not-allowed transition-all font-mono select-none"
-              placeholder="เริ่มพิมพ์ที่นี่... (ไม่อนุญาต Copy/Paste)"
+              className="w-full p-4 text-lg border-2 border-gray-200 rounded-lg resize-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 focus:outline-none disabled:bg-gray-50 disabled:text-gray-400 disabled:cursor-not-allowed transition-all"
+              placeholder="เริ่มพิมพ์ที่นี่..."
               value={userInput}
               onChange={handleInputChange}
               onKeyDown={handleKeyDown}
@@ -333,22 +312,15 @@ function App() {
             {/* แสดงสถิติการพิมพ์ */}
             {gameStatus === 'playing' && (
               <div className="mt-2 flex justify-between text-sm">
-                <span className="text-green-600 font-semibold">
-                  ✅ ถูกต้อง: {correctChars} ตัวอักษร
+                <span className="text-green-600">
+                  ถูกต้อง: {correctChars} ตัวอักษร
                 </span>
-                <span className="text-red-600 font-semibold">
-                  ❌ ผิด: {incorrectChars} ตัวอักษร
+                <span className="text-red-600">
+                  ผิด: {incorrectChars} ตัวอักษร
                 </span>
-                <span className="text-blue-600 font-semibold">
-                  ⏳ เหลือ: {currentSentence.length - userInput.length} ตัวอักษร
+                <span className="text-blue-600">
+                  เหลือ: {currentSentence.length - userInput.length} ตัวอักษร
                 </span>
-              </div>
-            )}
-
-            {/* แสดงข้อความแจ้งเตือนการป้องกัน */}
-            {gameStatus === 'playing' && (
-              <div className="mt-2 p-2 bg-amber-50 border border-amber-200 rounded text-xs text-amber-700 text-center">
-                🔒 การป้องกัน: Copy (Ctrl+C), Paste (Ctrl+V), Cut (Ctrl+X) และ Right-click ถูกปิดใช้งาน
               </div>
             )}
           </div>
@@ -381,10 +353,10 @@ function App() {
             }`}>
               {gameStatus === 'idle' && 'รอเริ่มเกม'}
               {gameStatus === 'playing' && 'กำลังเล่น'}
-              {gameStatus === 'finished' && '🎉 เสร็จสิ้น!'}
+              {gameStatus === 'finished' && 'เสร็จสิ้น'}
             </span>
             
-            {/* แสดงผลลัพธ์เมื่อเสร็จ */}
+            {/* Result Section */}
             {gameStatus === 'finished' && (
               <div className="mt-3 p-3 bg-green-50 border border-green-200 rounded-lg">
                 <div className="text-green-800 font-semibold">ผลการทดสอบ:</div>
@@ -398,20 +370,6 @@ function App() {
             )}
           </div>
 
-          {/* Debug Info (เพื่อดูการทำงาน) */}
-          {gameStatus === 'playing' && (
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-              <h3 className="font-semibold text-blue-800 mb-2">Debug Info:</h3>
-              <div className="text-sm text-blue-700 space-y-1">
-                <p>ความยาวประโยค: {currentSentence.split(' ').length} คำ</p>
-                <p>ความยาวข้อความที่พิมพ์: {userInput.length} ตัวอักษร</p>
-                <p>ความคืบหน้า: {userInput.length}/{currentSentence.length} ({((userInput.length/currentSentence.length) * 100).toFixed(1)}%)</p>
-                <p>เวลาปัจจุบัน: {timeElapsed.toFixed(2)} วินาที</p>
-                <p>สถานะตัวจับเวลา: {timerRef.current ? '🟢 ทำงาน' : '🔴 หยุด'}</p>
-              </div>
-            </div>
-          )}
-
         </div>
       </div>
     </div>
@@ -420,34 +378,21 @@ function App() {
 
 export default App;
 
-// ระบบป้องกัน Copy-Paste ที่เพิ่มเข้าไป:
-// การป้องกันครบชุด:
+// Task 6 - ระบบป้องกัน Copy-Paste
 
-// Event Handlers ป้องกัน:
-// onPaste={handlePaste} - ป้องกัน paste
-// onCopy={handleCopy} - ป้องกัน copy
-// onCut={handleCut} - ป้องกัน cut
-// onContextMenu={handleContextMenu} - ป้องกัน right-click
+// 1. Event Handlers ป้องกัน:
+// - onPaste={handlePaste} - ป้องกัน paste
+// - onCopy={handleCopy} - ป้องกัน copy
+// - onCut={handleCut} - ป้องกัน cut
+// - onContextMenu={handleContextMenu} - ป้องกัน right-click
 
-// Keyboard Shortcuts ที่บล็อค:
-// Ctrl+V / Cmd+V - Paste
-// Ctrl+C / Cmd+C - Copy
-// Ctrl+X / Cmd+X - Cut
-// Ctrl+A / Cmd+A - Select All
+// 2. Keyboard Shortcuts ที่บล็อค:
+// - Ctrl+V / Cmd+V - Paste
+// - Ctrl+C / Cmd+C - Copy
+// - Ctrl+X / Cmd+X - Cut
+// - Ctrl+A / Cmd+A - Select All
 
-// CSS Classes ป้องกัน:
-// select-none - ป้องกันการเลือกข้อความ
-// autoComplete="off" - ปิด autocomplete
-// spellCheck="false" - ปิด spell check
-
-// UI ที่อัพเดท:
-// Placeholder: "เริ่มพิมพ์ที่นี่... (ไม่อนุญาต Copy/Paste)"
-// แจ้งเตือน: ข้อความแจ้งการป้องกันสีส้ม
-// Visual Feedback: ผู้ใช้รู้ว่าระบบป้องกันทำงาน
-
-// การทำงาน:
-// ✅ ป้องกัน Paste - ไม่สามารถวางข้อความได้
-// ✅ ป้องกัน Copy - ไม่สามารถคัดลอกได้
-// ✅ ป้องกัน Cut - ไม่สามารถตัดข้อความได้
-// ✅ ป้องกัน Right-click - เมนูไม่ขึ้น
-// ✅ ป้องกัน Select All - เลือกทั้งหมดไม่ได้
+// 3. CSS Class & Attributes ป้องกัน:
+// - select-none - ป้องกันการเลือกข้อความ
+// - autoComplete="off" - ปิด autocomplete
+// - spellCheck="false" - ปิด spell check

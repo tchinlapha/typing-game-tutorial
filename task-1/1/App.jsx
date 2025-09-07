@@ -21,18 +21,28 @@ function App() {
         <div className="p-8 space-y-8">
           
           {/* Timer Section */}
-          <div className="text-center">
-            <div className="inline-block bg-gray-50 border-2 border-gray-200 rounded-lg px-6 py-4">
-              <span className="text-gray-600 text-lg mr-3">เวลา:</span>
-              <span className="text-3xl font-bold text-gray-800">{timeElapsed.toFixed(1)}s</span>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
+            <div className="bg-gray-50 border-2 border-gray-200 rounded-lg px-4 py-3">
+              <span className="text-gray-600 text-sm block">เวลา</span>
+              <span className="text-2xl font-bold text-gray-800">{timeElapsed.toFixed(1)}s</span>
+            </div>
+            <div className="bg-green-50 border-2 border-green-200 rounded-lg px-4 py-3">
+              <span className="text-green-600 text-sm block">ความแม่นยำ</span>
+              <span className="text-2xl font-bold text-green-800">100%</span>
+            </div>
+            <div className="bg-blue-50 border-2 border-blue-200 rounded-lg px-4 py-3">
+              <span className="text-blue-600 text-sm block">ความคืบหน้า</span>
+              <span className="text-2xl font-bold text-blue-800">
+                {currentSentence ? `${userInput.length}/${currentSentence.length}` : '0/0'}
+              </span>
             </div>
           </div>
 
           {/* Sentence Display */}
-          <div className="bg-gray-50 border-2 border-gray-200 rounded-lg p-6 min-h-[100px] flex items-center justify-center">
-            <p className="text-xl text-gray-700 text-center leading-relaxed">
-              {currentSentence || "กดปุ่มเริ่มเกมเพื่อแสดงประโยค"}
-            </p>
+          <div className="bg-gray-50 border-2 border-gray-200 rounded-lg p-6 min-h-[120px] flex items-center justify-center">
+              <p className="text-xl text-gray-500 text-center">
+                กดปุ่มเริ่มเกมเพื่อแสดงประโยค
+              </p>
           </div>
 
           {/* Input Section */}
@@ -41,9 +51,8 @@ function App() {
               className="w-full p-4 text-lg border-2 border-gray-200 rounded-lg resize-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 focus:outline-none disabled:bg-gray-50 disabled:text-gray-400 disabled:cursor-not-allowed transition-all"
               placeholder="เริ่มพิมพ์ที่นี่..."
               value={userInput}
-              onChange={(e) => setUserInput(e.target.value)}
               disabled={gameStatus === 'idle'}
-              rows={3}
+              rows={4}
             />
           </div>
 
@@ -56,7 +65,6 @@ function App() {
                   : 'bg-green-500 hover:bg-green-600 text-white hover:shadow-green-200'
               } disabled:bg-gray-400 disabled:cursor-not-allowed disabled:transform-none disabled:shadow-none`}
               onClick={() => {
-                // ฟังก์ชันเริ่มเกมจะเพิ่มใน Task ต่อไป
                 console.log('เริ่มเกม!');
               }}
               disabled={gameStatus === 'playing'}
@@ -87,26 +95,17 @@ function App() {
 
 export default App;
 
-// สิ่งที่สร้างขึ้นใน Task 1:
-// 1. State พื้นฐาน:
-// currentSentence - เก็บประโยคที่จะให้พิมพ์
-// userInput - เก็บข้อความที่ผู้ใช้พิมพ์
-// timeElapsed - เก็บเวลาที่ผ่านไป
-// gameStatus - เก็บสถานะเกม (idle/playing/finished)
+// Task 1 - การออกแบบ UI / Layout พื้นฐาน
+// 1. State พื้นฐาน
+// - currentSentence - เก็บประโยคที่จะให้พิมพ์
+// - userInput - เก็บข้อความที่ผู้ใช้พิมพ์
+// - timeElapsed - เก็บเวลาที่ผ่านไป
+// - gameStatus - เก็บสถานะเกม (idle/playing/finished)
 
-// 2. UI Layout ที่เป็นระเบียบ:
-
-// Header ที่สวยงาม
-// ส่วนแสดงเวลา
-// ส่วนแสดงประโยคที่จะพิมพ์
-// Textarea สำหรับพิมพ์
-// ปุ่มเริ่มเกม
-// ส่วนแสดงสถานะ
-
-// 3. CSS ที่เขียนเองแบบ Clean:
-
-// ใช้ Gradient backgrounds
-// Responsive design
-// Hover effects
-// สีสันที่เป็นระเบียบ
-// Typography ที่ดูดี
+// 2. UI Layout:
+// - Header ที่สวยงาม
+// - ส่วนแสดงตัวจับเวลา
+// - ส่วนแสดงประโยคที่จะพิมพ์
+// - Textarea สำหรับพิมพ์
+// - ปุ่มเริ่มเกม
+// - ส่วนแสดงสถานะ

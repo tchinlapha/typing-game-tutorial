@@ -46,13 +46,23 @@ function App() {
     return sentences[randomIndex];
   };
 
-  // ฟังก์ชันเริ่มเกม (เพิ่มเข้ามาเพื่อทดสอบ)
+  // ฟังก์ชันเริ่มเกม
   const startGame = () => {
     const newSentence = getRandomSentence();
     setCurrentSentence(newSentence);
     setUserInput('');
     setTimeElapsed(0);
     setGameStatus('playing');
+  };
+
+  // ฟังก์ชันจัดการการพิมพ์
+  const handleInputChange = (e) => {
+    const newInput = e.target.value;
+    
+    // ป้องกันการพิมพ์เกินความยาวประโยค
+    if (newInput.length <= currentSentence.length) {
+      setUserInput(newInput);
+    }
   };
 
   return (
@@ -69,14 +79,24 @@ function App() {
         <div className="p-8 space-y-8">
           
           {/* Timer Section */}
-          <div className="text-center">
-            <div className="inline-block bg-gray-50 border-2 border-gray-200 rounded-lg px-6 py-4">
-              <span className="text-gray-600 text-lg mr-3">เวลา:</span>
-              <span className="text-3xl font-bold text-gray-800">{timeElapsed.toFixed(1)}s</span>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
+            <div className="bg-gray-50 border-2 border-gray-200 rounded-lg px-4 py-3">
+              <span className="text-gray-600 text-sm block">เวลา</span>
+              <span className="text-2xl font-bold text-gray-800">{timeElapsed.toFixed(1)}s</span>
+            </div>
+            <div className="bg-green-50 border-2 border-green-200 rounded-lg px-4 py-3">
+              <span className="text-green-600 text-sm block">ความแม่นยำ</span>
+              <span className="text-2xl font-bold text-green-800">100%</span>
+            </div>
+            <div className="bg-blue-50 border-2 border-blue-200 rounded-lg px-4 py-3">
+              <span className="text-blue-600 text-sm block">ความคืบหน้า</span>
+              <span className="text-2xl font-bold text-blue-800">
+                {currentSentence ? `${userInput.length}/${currentSentence.length}` : '0/0'}
+              </span>
             </div>
           </div>
 
-          {/* Sentence Display - ปรับปรุงให้แสดงประโยคที่สุ่มได้ */}
+          {/* Sentence Display */}
           <div className="bg-gray-50 border-2 border-gray-200 rounded-lg p-6 min-h-[120px] flex items-center justify-center">
             {currentSentence ? (
               <div className="w-full">
@@ -137,18 +157,6 @@ function App() {
             </span>
           </div>
 
-          {/* Debug Info (เพื่อดูการทำงาน) */}
-          {gameStatus === 'playing' && (
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-              <h3 className="font-semibold text-blue-800 mb-2">Debug Info:</h3>
-              <div className="text-sm text-blue-700 space-y-1">
-                <p>ความยาวประโยค: {currentSentence.split(' ').length} คำ</p>
-                <p>ความยาวข้อความที่พิมพ์: {userInput.length} ตัวอักษร</p>
-                <p>ความคืบหน้า: {userInput.length}/{currentSentence.length} ({((userInput.length/currentSentence.length) * 100).toFixed(1)}%)</p>
-              </div>
-            </div>
-          )}
-
         </div>
       </div>
     </div>
@@ -157,29 +165,20 @@ function App() {
 
 export default App;
 
-// สิ่งที่สร้างขึ้นใน Task 2:
+// Task 2 - การแสดงประโยคแบบสุ่มหลุ่งกดปุ่ม "เริ่มเกม"
 // 1. Array ประโยค 10 ประโยค (ภาษาอังกฤษ 20-40 คำ)
 
-// ประโยคสั้น (~20 คำ): "The quick brown fox..."
-// ประโยคยาว (~40 คำ): "Artificial intelligence and machine learning..."
-// หลากหลายหัวข้อ: เทคโนโลยี, ธรรมชาติ, ประวัติศาสตร์, การศึกษา
-
-// 2. ฟังก์ชันสุ่มประโยค
-// javascriptconst getRandomSentence = () => {
+// 2. ฟังก์ชั่นสุ่มประโยค
+// const getRandomSentence = () => {
 //   const randomIndex = Math.floor(Math.random() * sentences.length);
 //   return sentences[randomIndex];
 // };
-// 3. การแสดงผลที่ปรับปรุง
 
-// แสดงประโยคแบบ justify text
-// นับจำนวนคำและแสดงด้านขวา
-// ปุ่ม "ประโยคใหม่" สำหรับทดสอบ
-// Debug info แสดงความคืบหน้า
-
-// 4. ฟีเจอร์เพิ่มเติม
-
-// ปุ่มเริ่มเกมทำงานได้แล้ว
-// แสดงสถิติการพิมพ์
-// UI responsive และสวยงาม
-
-// ทดสอบได้เลย: กดปุ่ม "เริ่มเกม" จะได้ประโยคสุ่ม และสามารถกด "ประโยคใหม่" เพื่อเปลี่ยนประโยคใหม่ได้!
+// 3. ฟังก์ชันเริ่มเกมและการเปลี่ยนสถานะ
+// const startGame = () => {
+//   const newSentence = getRandomSentence();
+//   setCurrentSentence(newSentence);
+//   setUserInput('');
+//   setTimeElapsed(0);
+//   setGameStatus('playing');
+// };

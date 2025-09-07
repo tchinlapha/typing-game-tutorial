@@ -54,6 +54,30 @@ function App() {
     return sentences[randomIndex];
   };
 
+  // ฟังก์ชันเริ่มเกม
+  const startGame = () => {
+    const newSentence = getRandomSentence();
+    setCurrentSentence(newSentence);
+    setUserInput('');
+    setTimeElapsed(0);
+    setGameStatus('playing');
+    // รีเซ็ต state การเปรียบเทียบ
+    setCorrectChars(0);
+    setIncorrectChars(0);
+    setAccuracy(100);
+  };
+
+  // ฟังก์ชันจัดการการพิมพ์
+  const handleInputChange = (e) => {
+    const newInput = e.target.value;
+    
+    // ป้องกันการพิมพ์เกินความยาวประโยค
+    if (newInput.length <= currentSentence.length) {
+      setUserInput(newInput);
+      compareText(newInput);
+    }
+  };
+
   // ฟังก์ชันเปรียบเทียบข้อความและอัพเดท state
   const compareText = (input) => {
     let correct = 0;
@@ -86,47 +110,9 @@ function App() {
     }
   };
 
-  // ฟังก์ชันจัดการการพิมพ์
-  const handleInputChange = (e) => {
-    const newInput = e.target.value;
-    
-    // ป้องกันการพิมพ์เกินความยาวประโยค
-    if (newInput.length <= currentSentence.length) {
-      setUserInput(newInput);
-      compareText(newInput);
-    }
-  };
-
-  // ฟังก์ชันจัดการ key events
-  const handleKeyDown = (e) => {
-    // ป้องกัน backspace ถ้าไม่มีอะไรให้ลบ
-    if (e.key === 'Backspace' && userInput.length === 0) {
-      e.preventDefault();
-    }
-    
-    // ป้องกันการพิมพ์อักขระพิเศษบางตัว
-    if (e.key === 'Tab') {
-      e.preventDefault();
-    }
-  };
-
-  // ฟังก์ชันเริ่มเกม
-  const startGame = () => {
-    const newSentence = getRandomSentence();
-    setCurrentSentence(newSentence);
-    setUserInput('');
-    setTimeElapsed(0);
-    setGameStatus('playing');
-    // รีเซ็ต state การเปรียบเทียบ
-    setCorrectChars(0);
-    setIncorrectChars(0);
-    setAccuracy(100);
-  };
-
   // useEffect สำหรับ focus textarea เมื่อเริ่มเกม
   useEffect(() => {
     if (gameStatus === 'playing' && textareaRef.current) {
-      // ใช้ setTimeout เพื่อให้ DOM render เสร็จก่อน
       setTimeout(() => {
         textareaRef.current.focus();
       }, 100);
@@ -146,7 +132,7 @@ function App() {
         {/* Main Content */}
         <div className="p-8 space-y-8">
           
-          {/* Timer and Stats Section */}
+          {/* Timer Section */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
             <div className="bg-gray-50 border-2 border-gray-200 rounded-lg px-4 py-3">
               <span className="text-gray-600 text-sm block">เวลา</span>
@@ -192,7 +178,6 @@ function App() {
               placeholder="เริ่มพิมพ์ที่นี่..."
               value={userInput}
               onChange={handleInputChange}
-              onKeyDown={handleKeyDown}
               disabled={gameStatus === 'idle' || gameStatus === 'finished'}
               rows={4}
             />
@@ -241,10 +226,10 @@ function App() {
             }`}>
               {gameStatus === 'idle' && 'รอเริ่มเกม'}
               {gameStatus === 'playing' && 'กำลังเล่น'}
-              {gameStatus === 'finished' && '🎉 เสร็จสิ้น!'}
+              {gameStatus === 'finished' && 'เสร็จสิ้น'}
             </span>
             
-            {/* แสดงผลลัพธ์เมื่อเสร็จ */}
+            {/* Result Section */}
             {gameStatus === 'finished' && (
               <div className="mt-3 p-3 bg-green-50 border border-green-200 rounded-lg">
                 <div className="text-green-800 font-semibold">ผลการทดสอบ:</div>
@@ -258,18 +243,6 @@ function App() {
             )}
           </div>
 
-          {/* Debug Info (เพื่อดูการทำงาน) */}
-          {gameStatus === 'playing' && (
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-              <h3 className="font-semibold text-blue-800 mb-2">Debug Info:</h3>
-              <div className="text-sm text-blue-700 space-y-1">
-                <p>ความยาวประโยค: {currentSentence.split(' ').length} คำ</p>
-                <p>ความยาวข้อความที่พิมพ์: {userInput.length} ตัวอักษร</p>
-                <p>ความคืบหน้า: {userInput.length}/{currentSentence.length} ({((userInput.length/currentSentence.length) * 100).toFixed(1)}%)</p>
-              </div>
-            </div>
-          )}
-
         </div>
       </div>
     </div>
@@ -278,27 +251,15 @@ function App() {
 
 export default App;
 
-// Task 3 - ระบบการจับคีย์บอร์ดและเปรียบเทียบข้อความ:
+// Task 3 - การเปรียบเทียบข้อความถูก/ผิด
 
-// การเปรียบเทียบข้อความ Real-time
+// 1. การเปรียบเทียบข้อความ Real-time (compareText)
 // - เปรียบเทียบทีละตัวอักษร
 // - นับอักษรถูก/ผิด ทันที
 // - คำนวณความแม่นยำ (%)
 
-
-// ระบบการจับคีย์บอร์ด
-// - handleInputChange() - จัดการการพิมพ์
-// - handleKeyDown() - ป้องกัน Tab, Backspace
+// 2. เพิ่มเติม
 // - autoFocus เมื่อเริ่มเกม
-
-
-// UI ที่อัพเดทแล้ว
-// - สถิติ 3 คอลัมน์: เวลา, ความแม่นยำ, ความคืบหน้า
-// - แสดงตัวเลข real-time ด้านล่าง textarea
-// - ผลการทดสอบเมื่อเสร็จสิ้น 🎉
-
-
-// ระบบป้องกัน
-// - ไม่ให้พิมพ์เกินความยาวประโยค
 // - ปิด textarea เมื่อเสร็จสิ้น
-// - ป้องกันการกด key ที่ไม่ต้องการ
+// - Life Cycle ของโปรแกรม
+// - UI แสดงสถานะและสถิติต่าง ๆ
